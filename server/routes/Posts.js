@@ -12,9 +12,10 @@ router.get('/', validateToken, async (req, res) => {
     res.json({listOfPosts: listOfPosts, likedPosts: likedPosts})
 });
 
-router.post("/", async (req,res) => {
+router.post("/", validateToken, async (req,res) => {
 
     const post = req.body
+    post.username = req.user.username
 
     await Posts.create(post)
 
@@ -28,6 +29,20 @@ router.get('/byId/:id', async (req,res) => {
     const post  = await Posts.findByPk(id)
 
     res.json(post)
+})
+
+router.delete("/:id", validateToken, async (req,res) => {
+
+    const postId = req.params.id
+
+    await Posts.destroy({
+        where: {
+            id: postId,
+        }
+    })
+
+    res.json("POST DELETED")
+
 })
 
 module.exports = router;
